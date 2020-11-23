@@ -1,4 +1,5 @@
 ## 画像をサンプルで9つ3*3で表示させる
+# https://www.kaggle.com/oimosanchi/cassava-leaf-disease-exploratory-data-analysis/edit/run/47512654
 
 BASE_DIR = "../input/cassava-leaf-disease-classification/"
 # BASE_DIR = " Change your path "
