@@ -36,6 +36,10 @@ Cassava Leaf Disease Classificationコンペのリポジトリ
 
 
 #### 20201123
+以下のNotebookを読んだ
+参考：https://www.kaggle.com/ihelon/cassava-leaf-disease-exploratory-data-analysis
+概要：5つのラベルの分布確認,各ラベルのサンプル画像の確認,画像の増やす方法,全部3にしてsubmit
+
 クラス番号とクラス名の対応付けは label_num_to_disease_map.json ファイルにあります  
 "0": "Cassava Bacterial Blight (CBB)" | キャッサバ菌病 キャッサババクテリア病,  
 "1": "Cassava Brown Streak Disease (CBSD) | キャッサバ褐条病",  
@@ -43,3 +47,4 @@ Cassava Leaf Disease Classificationコンペのリポジトリ
 "3": "Cassava Mosaic Disease (CMD)" | キャッサバモザイク病,  
 "4": "Healthy"  
 
+0は虫食いのような画像　1,2,3,4の明確な違いは目視では分からなかった
