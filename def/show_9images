@@ -1,0 +1,39 @@
+## 画像をサンプルで9つ3*3で表示させる
+
+BASE_DIR = "../input/cassava-leaf-disease-classification/"
+# BASE_DIR = " Change your path "
+df_train = pd.read_csv(os.path.join(BASE_DIR, "train.csv"))
+
+def visualize_batch(image_ids, labels):
+    plt.figure(figsize=(16, 12))
+    for ind, (image_id, label) in enumerate(zip(image_ids, labels)):
+        #3行3列で表示
+        plt.subplot(3, 3, ind + 1)
+        image = cv2.imread(os.path.join(BASE_DIR, "train_images", image_id))
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+        plt.imshow(image)
+        plt.title(f"Class: {label}", fontsize=12)
+        plt.axis("off")
+    
+    plt.show()
+
+
+tmp_df = df_train.sample(9)
+image_ids = tmp_df["image_id"].values
+labels = tmp_df["class_name"].values
+
+visualize_batch(image_ids, labels)
+
+##### memo #####
+# enumerateの使い方 https://note.nkmk.me/python-enumerate-start/
+## l = ['Alice', 'Bob', 'Charlie']
+## for i, name in enumerate(l):
+##    print(i, name)
+### 0 Alice
+### 1 Bob
+### 2 Charlie
+
+# plt.subplotの使い方 https://stats.biopapyrus.jp/python/subplot.html
+# plt.subplot(3, 3, ind + 1)
+# 作画キャンバスを3行3列に分割する
