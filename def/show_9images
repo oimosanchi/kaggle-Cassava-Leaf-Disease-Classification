@@ -19,12 +19,26 @@ def visualize_batch(image_ids, labels):
     
     plt.show()
 
-
+##### use case #####
+# ランダムで画像がみたいとき
 tmp_df = df_train.sample(9)
 image_ids = tmp_df["image_id"].values
 labels = tmp_df["class_name"].values
 
 visualize_batch(image_ids, labels)
+
+
+##### use case #####
+# ラベルごとにランダムで画像が見るときは、以下の処理　同時にラベル数を見るとよい
+tmp_df = df_train[df_train["label"] == 0]
+print(f"Total train images for class 0: {tmp_df.shape[0]}")
+
+tmp_df = tmp_df.sample(9)
+image_ids = tmp_df["image_id"].values
+labels = tmp_df["label"].values
+
+visualize_batch(image_ids, labels)
+
 
 ##### memo #####
 # enumerateの使い方 https://note.nkmk.me/python-enumerate-start/
