@@ -33,3 +33,13 @@ Cassava Leaf Disease Classificationコンペのリポジトリ
 彼らの使命は、"現実世界の課題を解決するために人工知能研究を発展させること "です。  
 
 このデータセットの作成に協力してくれた国立作物資源研究所（NaCRRI）の様々な専門家や協力者に感謝します。  
+
+
+#### 20201123
+クラス番号とクラス名の対応付けは label_num_to_disease_map.json ファイルにあります  
+"0": "Cassava Bacterial Blight (CBB)" | キャッサバ菌病 キャッサババクテリア病,  
+"1": "Cassava Brown Streak Disease (CBSD) | キャッサバ褐条病",  
+"2": "Cassava Green Mottle (CGM)" | キャッサバグリーンモトル(瓶)?,  
+"3": "Cassava Mosaic Disease (CMD)" | キャッサバモザイク病,  
+"4": "Healthy"  
+
