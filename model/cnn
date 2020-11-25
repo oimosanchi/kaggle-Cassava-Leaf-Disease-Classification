@@ -1,0 +1,128 @@
+# https://www.kaggle.com/oimosanchi/cassava-leaf-disease-keras-cnn-baseline/edit
+# CNNモデル
+
+WORK_DIR = '../input/cassava-leaf-disease-classification'
+train_labels = pd.read_csv(os.path.join(WORK_DIR, "train.csv"))
+
+
+# modeling
+BATCH_SIZE = 128
+STEPS_PER_EPOCH = len(train_labels)*0.8 / BATCH_SIZE
+VALIDATION_STEPS = len(train_labels)*0.2 / BATCH_SIZE
+EPOCHS = 20
+TARGET_SIZE = 224
+
+
+train_labels.label = train_labels.label.astype('str')
+
+train_generator = ImageDataGenerator(validation_split = 0.2,
+                                     preprocessing_function = None,
+                                     zoom_range = 0.15,
+                                     cval = 0.,
+                                     horizontal_flip = True,
+                                     vertical_flip = True,
+                                     fill_mode = 'nearest') \
+    .flow_from_dataframe(train_labels,
+                         directory = os.path.join(WORK_DIR, "train_images"),
+                         subset = "training",
+                         x_col = "image_id",
+                         y_col = "label",
+                         target_size = (TARGET_SIZE, TARGET_SIZE),
+                         batch_size = BATCH_SIZE,
+                         class_mode = "sparse")
+
+validation_generator = ImageDataGenerator(validation_split = 0.2) \
+    .flow_from_dataframe(train_labels,
+                         directory = os.path.join(WORK_DIR, "train_images"),
+                         subset = "validation",
+                         x_col = "image_id",
+                         y_col = "label",
+                         target_size = (TARGET_SIZE, TARGET_SIZE),
+                         batch_size = BATCH_SIZE,
+                         class_mode = "sparse")
+
+
+def create_model():
+    model = models.Sequential()
+
+    model.add(EfficientNetB0(include_top = False, weights = 'imagenet',
+                             input_shape = (TARGET_SIZE, TARGET_SIZE, 3)))
+    
+    model.add(layers.GlobalAveragePooling2D())
+    model.add(layers.Dense(5, activation = "softmax"))
+
+    model.compile(optimizer = Adam(lr = 0.001),
+                  loss = "sparse_categorical_crossentropy",
+                  metrics = ["acc"])
+    return model
+    
+    
+model = create_model()
+model.summary()
+
+
+model_save = ModelCheckpoint('./best_baseline_model.h5', 
+                             save_best_only = True, 
+                             save_weights_only = True,
+                             monitor = 'val_loss', 
+                             mode = 'min', verbose = 1)
+early_stop = EarlyStopping(monitor = 'val_loss', min_delta = 0.001, 
+                           patience = 5, mode = 'min', verbose = 1,
+                           restore_best_weights = True)
+reduce_lr = ReduceLROnPlateau(monitor = 'val_loss', factor = 0.1, 
+                              patience = 2, min_delta = 0.001, 
+                              mode = 'min', verbose = 1)
+
+#epochs = 20 まあまあ時間かかるよ
+history = model.fit_generator(
+    train_generator,
+    steps_per_epoch = STEPS_PER_EPOCH,
+    epochs = EPOCHS,
+    validation_data = validation_generator,
+    validation_steps = VALIDATION_STEPS,
+    callbacks = [model_save, early_stop, reduce_lr]
+)
+
+
+acc = history.history['acc']
+val_acc = history.history['val_acc']
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+
+epochs = range(1, len(acc) + 1)
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 5))
+sns.set_style("white")
+plt.suptitle('Train history', size = 15)
+
+ax1.plot(epochs, acc, "bo", label = "Training acc")
+ax1.plot(epochs, val_acc, "b", label = "Validation acc")
+ax1.set_title("Training and validation acc")
+ax1.legend()
+
+ax2.plot(epochs, loss, "bo", label = "Training loss", color = 'red')
+ax2.plot(epochs, val_loss, "b", label = "Validation loss", color = 'red')
+ax2.set_title("Training and validation loss")
+ax2.legend()
+
+plt.show()
+
+
+model.save('./baseline_model.h5')
+
+#Predict
+ss = pd.read_csv(os.path.join(WORK_DIR, "sample_submission.csv"))
+ss
+
+preds = []
+
+for image_id in ss.image_id:
+    image = Image.open(os.path.join(WORK_DIR,  "test_images", image_id))
+    image = image.resize((TARGET_SIZE, TARGET_SIZE))
+    image = np.expand_dims(image, axis = 0)
+    preds.append(np.argmax(model.predict(image)))
+
+ss['label'] = preds
+ss
+
+ss.to_csv('submission.csv', index = False)
