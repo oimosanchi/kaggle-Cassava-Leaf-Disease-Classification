@@ -48,3 +48,11 @@ Cassava Leaf Disease Classificationコンペのリポジトリ
 "4": "Healthy"  
 
 0は虫食いのような画像　1,2,3,4の明確な違いは目視では分からなかった
+
+
+#### 20201125
+CNNでやってるやつ
+https://www.kaggle.com/oimosanchi/cassava-leaf-disease-keras-cnn-baseline/edit
+
+
+
